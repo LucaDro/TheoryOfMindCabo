@@ -69,3 +69,21 @@ class Player:
             second the one they are swapping with
         """
         pass
+
+    def throw_away(self, card_value: int) -> list[int]:
+        """Checks if players have a card of the same value as the one that was just placed
+        on the discard and throws that card away if they do
+
+        Args:
+            card_value (int): the value of the card that was just placed on the discard
+
+        Returns:
+            list[int]: list of the indexes of the cards from the players hand that have the same value 
+            as the card that was just discarded. If there are no same cards, the list is empty
+        """
+        same_value: list[int] = []
+        for i in range(4):
+            if self.known_cards[self.id][i] == card_value:
+                same_value.append(i)
+                self.known_cards[self.id][i] = -2
+        return same_value
