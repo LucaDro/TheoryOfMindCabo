@@ -35,6 +35,7 @@ class Player:
 
     def choose_swap(self, card_value: int) -> int:
         """Chooses which of the cards in the players hand to swap the picked up card with
+        updates their own known hands and returns the index of the card
 
         Args:
             card_value (int): value of the picked up card
