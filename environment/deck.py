@@ -24,7 +24,6 @@ class Deck:
 
     def draw(self) -> int:
         card = self.cards.pop(0)
-        print(card)
         return card
     
     def empty(self) -> bool:

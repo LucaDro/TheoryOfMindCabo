@@ -48,10 +48,12 @@ class Human(Player):
         while index < 0 or index > 3:
             print("Not a valid choice")
             index = int(input())
+        self.known_cards[self.id][index] = card_value
         return index
 
     def choose_use_special(self, card_value: int) -> int:
         print("")
+        print("The special card is ", card_value)
         print("Would you like to use the power of this card? 7 and 8 is peek, 9 and 10 is spy, 11 and 12 is swap")
         print("0 if no, 1 if yes")
         use = int(input())

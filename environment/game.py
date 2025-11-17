@@ -65,12 +65,19 @@ class Game:
             current_player.learn_card(player_id, player_index, swapped_opponent_card_player_knowledge)
             current_player.learn_card((player_id + 1)%2, opponent_index, swapped_player_card_player_knowledge)
             opposing_player.learn_card(player_id, player_index, swapped_opponent_card_opponent_knowedge)
-            current_player.learn_card((player_id + 1)%2, opponent_index, swapped_player_card_opponent_knowledge)
+            opposing_player.learn_card((player_id + 1)%2, opponent_index, swapped_player_card_opponent_knowledge)
             # Swaps the cards in the game managers knowledge
             self.player_cards[player_id][player_index], self.player_cards[(player_id + 1)%2][opponent_index] = self.player_cards[(player_id + 1)%2][opponent_index], self.player_cards[player_id][player_index]
 
             
     def player_turn(self, player_id: int) -> int:
+        print("")
+        print("GOD MODE")
+        for i in range(2):
+            for j in range(4):
+                print(self.player_cards[i][j], end = " ")
+            print("")
+        print("")
         current_player: Player = self.players[player_id]
         opposing_player: Player = self.players[(player_id+1)%2]
         chosen_pile: int = current_player.choose_drawpile(self.discard)
@@ -86,7 +93,6 @@ class Game:
             return 0
         # Pile chosen is draw pile
         else:
-            discard_card = -3
             chosen_card = self.draw_pile.draw()
             action = current_player.choose_action(chosen_card)
             # Action chosen is to swap card with one of their own cards
@@ -94,18 +100,21 @@ class Game:
                 index = current_player.choose_swap(chosen_card)
                 discard_card = self.player_cards[player_id][index]
                 self.player_cards[player_id][index] = chosen_card
+                opposing_player.learn_card(player_id, index, -1)
             # Action chosen is to discard the card
             elif action == 1:
                 discard_card = chosen_card
-            if discard_card >= 7 and discard_card <= 12:
-                if current_player.choose_use_special(discard_card):
-                    self.special_move(discard_card, current_player.id)
-            self.discard = discard_card
+        if discard_card >= 7 and discard_card <= 12:
+            if current_player.choose_use_special(discard_card):
+                self.special_move(discard_card, current_player.id)
+        self.discard = discard_card
         # Players can throw away cards if they are of the same value as discarded card this turn
         for player in self.players:
             thrown_away = player.throw_away(self.discard)
             for card in thrown_away:
                 self.player_cards[player.id][card] = -1
+                for inform_player in self.players:
+                    inform_player.learn_card(player.id, card, -2)
         return 1
 
     def end_game(self) -> int:
