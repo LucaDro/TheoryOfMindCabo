@@ -6,14 +6,12 @@ class Game:
     def __init__(self) -> None:
         pass
 
-    def new_game(self) -> None:
+    def new_game(self, player_0: Player, player_1: Player) -> None:
         self.draw_pile: Deck = Deck()
         self.draw_pile.shuffle()
         self.discard = self.draw_pile.draw()
-        player_0: Player = Player(0)
-        player_1: Player = Player(1)
         self.players: list[Player] = [player_0, player_1]
-        self.player_cards = [[],[]]
+        self.player_cards = [[0, 0, 0, 0],[0, 0, 0, 0]]
         for i in range(2):
             for j in range(4):
                 self.player_cards[i][j] = self.draw_pile.draw()
@@ -46,8 +44,32 @@ class Game:
         start_player = (start_player+1)%2
         self.player_turn(start_player)
         return self.end_game()
-            
+    
+    def special_move(self, chosen_card, player_id):
+        current_player: Player = self.players[player_id]
+        opposing_player: Player = self.players[(player_id + 1)%2]
+        if (chosen_card + 1) // 2 == 4:
+            index = current_player.choose_peek_special()
+            current_player.learn_card(player_id, index, self.player_cards[player_id][index])
+        if (chosen_card + 1) // 2 == 5:
+            index = current_player.choose_spy_special()
+            current_player.learn_card((player_id+1)%2, index, self.player_cards[(player_id+1)%2][index])
+        if (chosen_card + 1) // 2 == 6:
+            player_index, opponent_index = current_player.choose_swap_special()
+            # Values of the swapped cards according to the players' knowledge
+            swapped_player_card_player_knowledge = current_player.known_cards[player_id][player_index]
+            swapped_opponent_card_player_knowledge = current_player.known_cards[(player_id + 1)%2][opponent_index]
+            swapped_player_card_opponent_knowledge = opposing_player.known_cards[player_id][player_index]
+            swapped_opponent_card_opponent_knowedge = opposing_player.known_cards[(player_id + 1)%2][opponent_index]
+            # Swapping the cards in the players' knowledge base
+            current_player.learn_card(player_id, player_index, swapped_opponent_card_player_knowledge)
+            current_player.learn_card((player_id + 1)%2, opponent_index, swapped_player_card_player_knowledge)
+            opposing_player.learn_card(player_id, player_index, swapped_opponent_card_opponent_knowedge)
+            current_player.learn_card((player_id + 1)%2, opponent_index, swapped_player_card_opponent_knowledge)
+            # Swaps the cards in the game managers knowledge
+            self.player_cards[player_id][player_index], self.player_cards[(player_id + 1)%2][opponent_index] = self.player_cards[(player_id + 1)%2][opponent_index], self.player_cards[player_id][player_index]
 
+            
     def player_turn(self, player_id: int) -> int:
         current_player: Player = self.players[player_id]
         opposing_player: Player = self.players[(player_id+1)%2]
@@ -56,6 +78,7 @@ class Game:
         if chosen_pile ==  1:
             chosen_card = self.discard
             index = current_player.choose_swap(chosen_card)
+            discard_card = self.player_cards[player_id][index]
             self.player_cards[player_id][index] = chosen_card
             opposing_player.learn_card(player_id, index, chosen_card)
         # Player called Cabo
@@ -63,38 +86,21 @@ class Game:
             return 0
         # Pile chosen is draw pile
         else:
+            discard_card = -3
             chosen_card = self.draw_pile.draw()
             action = current_player.choose_action(chosen_card)
             # Action chosen is to swap card with one of their own cards
             if action == 0:
                 index = current_player.choose_swap(chosen_card)
+                discard_card = self.player_cards[player_id][index]
                 self.player_cards[player_id][index] = chosen_card
             # Action chosen is to discard the card
             elif action == 1:
-                pass
-            # Action chosen is to use the special power of the card
-            else:
-                if (chosen_card + 1) // 2 == 4:
-                    index = current_player.choose_peek_special()
-                    current_player.learn_card(player_id, index, self.player_cards[player_id][index])
-                if (chosen_card + 1) // 2 == 5:
-                    index = current_player.choose_spy_special()
-                    current_player.learn_card((player_id+1)%2, index, self.player_cards[(player_id+1)%2][index])
-                if (chosen_card + 1) // 2 == 6:
-                    player_index, opponent_index = current_player.choose_swap_special()
-                    # Values of the swapped cards according to the players' knowledge
-                    swapped_player_card_player_knowledge = current_player.known_cards[player_id][player_index]
-                    swapped_opponent_card_player_knowledge = current_player.known_cards[(player_id + 1)%2][opponent_index]
-                    swapped_player_card_opponent_knowledge = opposing_player.known_cards[player_id][player_index]
-                    swapped_opponent_card_opponent_knowedge = opposing_player.known_cards[(player_id + 1)%2][opponent_index]
-                    # Swapping the cards in the players' knowledge base
-                    current_player.learn_card(player_id, player_index, swapped_opponent_card_player_knowledge)
-                    current_player.learn_card((player_id + 1)%2, opponent_index, swapped_player_card_player_knowledge)
-                    opposing_player.learn_card(player_id, player_index, swapped_opponent_card_opponent_knowedge)
-                    current_player.learn_card((player_id + 1)%2, opponent_index, swapped_player_card_opponent_knowledge)
-                    # Swaps the cards in the game managers knowledge
-                    self.player_cards[player_id][player_index], self.player_cards[(player_id + 1)%2][opponent_index] = self.player_cards[(player_id + 1)%2][opponent_index], self.player_cards[player_id][player_index]
-        self.discard = chosen_card
+                discard_card = chosen_card
+            if discard_card >= 7 and discard_card <= 12:
+                if current_player.choose_use_special(discard_card):
+                    self.special_move(discard_card, current_player.id)
+            self.discard = discard_card
         # Players can throw away cards if they are of the same value as discarded card this turn
         for player in self.players:
             thrown_away = player.throw_away(self.discard)

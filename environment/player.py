@@ -28,8 +28,7 @@ class Player:
             card_value (int): value of the picked up card
 
         Returns:
-            int: action to take, 0 to swap, 1 to discard, 2 to use special power
-            on card (if applicable)
+            int: action to take, 0 to swap, 1 to discard
         """
         pass
 
@@ -44,6 +43,16 @@ class Player:
             int: index of which card to swap with
         """
         pass
+
+    def choose_use_special(self, card_value: int) -> int:
+        """Choose wether or not to use the special power on a card
+
+        Args:
+            card_value (int): The value of the card
+
+        Returns:
+            int: Wether or not the power will be used, 0 if no, 1 if yes
+        """
 
     def choose_peek_special(self) -> int:
         """Chooses which card to look at in their own hand
@@ -61,7 +70,7 @@ class Player:
         """
         pass
 
-    def choose_swap_special(self) -> tuple(int):
+    def choose_swap_special(self) -> tuple[int, int]:
         """Chooses two cards to swap, one from their hand and one from their opponents hand
 
         Returns:
