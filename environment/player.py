@@ -11,13 +11,13 @@ class Player:
         return
 
     def choose_drawpile(self, discard_value: int) -> int:
-        """chooses wether to draw a card from draw pile or discard pile.
+        """chooses wether to draw a card from draw pile or discard pile or to call Cabo.
 
         Args:
             discard_value (int): value of the top card on the discard pile
 
         returns:
-            int: 0 if player draws from draw pile, 1 if player draws from discard pile
+            int: 0 if player draws from draw pile, 1 if player draws from discard pile and 2 if player calls Cabo
         """
         pass
 

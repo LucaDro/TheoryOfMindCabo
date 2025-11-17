@@ -23,8 +23,12 @@ class Deck:
         shuffle(self.cards)
 
     def draw(self) -> int:
-        print("what is up")
         card = self.cards.pop(0)
         print(card)
-        print("hello")
         return card
+    
+    def empty(self) -> bool:
+        if len(self.cards) == 0:
+            return True
+        else:
+            return False
