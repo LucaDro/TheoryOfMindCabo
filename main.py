@@ -1,4 +1,4 @@
-from game import Game
+from environment.game import Game
 from agents.human_player import Human
 
 game = Game()
