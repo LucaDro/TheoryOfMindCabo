@@ -1,5 +1,4 @@
 from deck import Deck
-from discard import Discard
 from player import Player
 
 class Game:
