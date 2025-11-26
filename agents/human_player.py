@@ -1,4 +1,4 @@
-from player import Player
+from agents.player import Player
 
 class Human(Player):
     def player_announcement(self):

@@ -1,4 +1,4 @@
-from deck import Deck
+from environment.deck import Deck
 from agents.player import Player
 
 class Game:
