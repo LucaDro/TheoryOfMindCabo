@@ -61,7 +61,7 @@ class Game:
             current_player.learn_card((player_id+1)%2, index, self.player_cards[(player_id+1)%2][index])
         if (chosen_card + 1) // 2 == 6:
             player_index, opponent_index = current_player.choose_swap_special()
-            while player_index < 0 or player_index > 3 or self.player_cards[player_index][index] == -1 or opponent_index < 0 or opponent_index > 3 or self.player_cards[(player_id + 1)%2][opponent_index]:
+            while player_index < 0 or player_index > 3 and self.player_cards[player_index][index] == -1 or opponent_index < 0 or opponent_index > 3 and self.player_cards[(player_id + 1)%2][opponent_index]:
                 print("not an option, choose again")
                 index = current_player.choose_spy_special()
             # Values of the swapped cards according to the players' knowledge
@@ -79,13 +79,14 @@ class Game:
 
             
     def player_turn(self, player_id: int) -> int:
-        # print("")
-        # print("GOD MODE")
-        # for i in range(2):
-        #     for j in range(4):
-        #         print(self.player_cards[i][j], end = " ")
-        #     print("")
-        # print("")
+        print("")
+        print("GOD MODE")
+        print("discard: ", self.discard)
+        for i in range(2):
+            for j in range(4):
+                print(self.player_cards[i][j], end = " ")
+            print("")
+        print("")
         current_player: Player = self.players[player_id]
         opposing_player: Player = self.players[(player_id+1)%2]
         chosen_pile: int = current_player.choose_drawpile(self.discard)
@@ -101,6 +102,7 @@ class Game:
                 index = current_player.choose_swap(chosen_card)
             discard_card = self.player_cards[player_id][index]
             self.player_cards[player_id][index] = chosen_card
+            current_player.learn_card(player_id, index, chosen_card)
             opposing_player.learn_card(player_id, index, chosen_card)
         # Player called Cabo
         elif chosen_pile == 2:
@@ -120,6 +122,7 @@ class Game:
                     index = current_player.choose_swap(chosen_card)
                 discard_card = self.player_cards[player_id][index]
                 self.player_cards[player_id][index] = chosen_card
+                current_player.learn_card(player_id, index, chosen_card)
                 opposing_player.learn_card(player_id, index, -1)
             # Action chosen is to discard the card
             elif action == 1:
