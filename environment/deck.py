@@ -17,7 +17,7 @@ DEFAULT_DECK = [0,0,
 
 class Deck:
     def __init__(self) -> None:
-        self.cards = DEFAULT_DECK
+        self.cards = DEFAULT_DECK.copy()
 
     def shuffle(self) -> None:
         shuffle(self.cards)
@@ -27,7 +27,11 @@ class Deck:
         return card
     
     def empty(self) -> bool:
+        # print(len(self.cards))
         if len(self.cards) == 0:
             return True
         else:
             return False
+    
+    def reset(self) -> None:
+        self.cards = DEFAULT_DECK
