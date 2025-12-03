@@ -5,8 +5,8 @@ class Game:
     def __init__(self) -> None:
         pass
 
-    def new_game(self, player_0: Player, player_1: Player) -> None:
-        self.draw_pile: Deck = Deck()
+    def new_game(self, player_0: Player, player_1: Player, deck: Deck) -> None:
+        self.draw_pile: Deck = deck
         self.draw_pile.shuffle()
         self.discard = self.draw_pile.draw()
         self.players: list[Player] = [player_0, player_1]
@@ -50,19 +50,19 @@ class Game:
         if (chosen_card + 1) // 2 == 4:
             index = current_player.choose_peek_special()
             while index < 0 or index > 3 or self.player_cards[player_id][index] == -1:
-                print("not an option, choose again")
+                # print("not an option, choose again")
                 index = current_player.choose_peek_special()
             current_player.learn_card(player_id, index, self.player_cards[player_id][index])
         if (chosen_card + 1) // 2 == 5:
             index = current_player.choose_spy_special()
             while index < 0 or index > 3 or self.player_cards[(player_id+1)%2][index] == -1:
-                print("not an option, choose again")
+                # print("not an option, choose again")
                 index = current_player.choose_spy_special()
             current_player.learn_card((player_id+1)%2, index, self.player_cards[(player_id+1)%2][index])
         if (chosen_card + 1) // 2 == 6:
             player_index, opponent_index = current_player.choose_swap_special()
             while player_index < 0 or player_index > 3 and self.player_cards[player_index][index] == -1 or opponent_index < 0 or opponent_index > 3 and self.player_cards[(player_id + 1)%2][opponent_index]:
-                print("not an option, choose again")
+                # print("not an option, choose again")
                 index = current_player.choose_spy_special()
             # Values of the swapped cards according to the players' knowledge
             swapped_player_card_player_knowledge = current_player.known_cards[player_id][player_index]
@@ -79,26 +79,26 @@ class Game:
 
             
     def player_turn(self, player_id: int) -> int:
-        print("")
-        print("GOD MODE")
-        print("discard: ", self.discard)
-        for i in range(2):
-            for j in range(4):
-                print(self.player_cards[i][j], end = " ")
-            print("")
-        print("")
+        # print("")
+        # print("GOD MODE")
+        # print("discard: ", self.discard)
+        # for i in range(2):
+        #     for j in range(4):
+        #         print(self.player_cards[i][j], end = " ")
+        #     print("")
+        # print("")
         current_player: Player = self.players[player_id]
         opposing_player: Player = self.players[(player_id+1)%2]
         chosen_pile: int = current_player.choose_drawpile(self.discard)
         while chosen_pile < 0 or chosen_pile > 2:
-            print("not an option, choose again")
+            # print("not an option, choose again")
             chosen_pile = current_player.choose_drawpile(self.discard)
         # Pile chosen is discard
         if chosen_pile ==  1:
             chosen_card = self.discard
             index = current_player.choose_swap(chosen_card)
             while index < 0 or index > 3 or self.player_cards[player_id][index] == -1:
-                print("not an option, choose again")
+                # print("not an option, choose again")
                 index = current_player.choose_swap(chosen_card)
             discard_card = self.player_cards[player_id][index]
             self.player_cards[player_id][index] = chosen_card
@@ -112,13 +112,13 @@ class Game:
             chosen_card = self.draw_pile.draw()
             action = current_player.choose_action(chosen_card)
             if action < 0 or action > 1:
-                print("not an option, choose again")
+                # print("not an option, choose again")
                 action = current_player.choose_action(chosen_card)
             # Action chosen is to swap card with one of their own cards
             if action == 0:
                 index = current_player.choose_swap(chosen_card)
                 while index < 0 or index > 3 or self.player_cards[player_id][index] == -1:
-                    print("not an option, choose again")
+                    # print("not an option, choose again")
                     index = current_player.choose_swap(chosen_card)
                 discard_card = self.player_cards[player_id][index]
                 self.player_cards[player_id][index] = chosen_card
